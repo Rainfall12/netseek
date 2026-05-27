@@ -1,0 +1,6 @@
+auto-install-peers=true
+registry=https://registry.npmmirror.com
+minimumReleaseAgeExclude=*
+frozen-lockfile=false
+confirm-modules-purge=false
+node-linker=hoisted
