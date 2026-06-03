@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Require maintainer-level repository access
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const allowed = new Set(["admin", "maintain", "write"]);
@@ -93,7 +93,7 @@ jobs:
     steps:
       - name: Resolve refs and target PR
         id: resolve
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const eventName = context.eventName;
