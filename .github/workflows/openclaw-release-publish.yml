@@ -151,7 +151,7 @@ jobs:
           github-token: ${{ github.token }}
 
       - name: Checkout release tag
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           ref: refs/tags/${{ inputs.tag }}
           fetch-depth: 0
@@ -287,7 +287,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout release SHA
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           ref: ${{ needs.resolve_release_target.outputs.sha }}
           fetch-depth: 1
