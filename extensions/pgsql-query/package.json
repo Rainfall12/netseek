@@ -1,0 +1,11 @@
+{
+  "name": "@openclaw/pgsql-query",
+  "version": "1.0.0",
+  "description": "Query PostgreSQL tables for network device data",
+  "type": "module",
+  "openclaw": {
+    "extensions": [
+      "./index.js"
+    ]
+  }
+}

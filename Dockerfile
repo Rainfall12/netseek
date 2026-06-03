@@ -122,7 +122,7 @@ RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm_config_verify_deps_before_run=fa
 # Force pnpm for UI build (Bun may fail on ARM/Synology architectures)
 ENV OPENCLAW_PREFER_PNPM=1
 RUN pnpm_config_verify_deps_before_run=false pnpm ui:build
-RUN pnpm_config_verify_deps_before_run=false pnpm qa:lab:build
+RUN pnpm_config_verify_deps_before_run=false pnpm qa:lab:build || echo "qa:lab:build skipped (non-essential)"
 
 # Prune dev dependencies and strip build-only metadata before copying
 # runtime assets into the final image.

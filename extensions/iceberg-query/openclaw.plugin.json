@@ -1,0 +1,17 @@
+{
+  "id": "iceberg-query",
+  "name": "Iceberg Query",
+  "description": "Query local Iceberg tables for network device data (inventory, config, topology, metrics)",
+  "enabledByDefault": true,
+  "contracts": {
+    "tools": ["query_iceberg"]
+  },
+  "toolMetadata": {
+    "query_iceberg": {}
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

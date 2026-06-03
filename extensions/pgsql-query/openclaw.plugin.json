@@ -1,0 +1,17 @@
+{
+  "id": "pgsql-query",
+  "name": "PostgreSQL Query",
+  "description": "Query PostgreSQL tables for network device data (inventory, config, topology, metrics)",
+  "enabledByDefault": true,
+  "contracts": {
+    "tools": ["query_pgsql"]
+  },
+  "toolMetadata": {
+    "query_pgsql": {}
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

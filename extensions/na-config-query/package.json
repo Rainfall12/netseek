@@ -1,0 +1,11 @@
+{
+  "name": "@openclaw/na-config-query",
+  "version": "1.0.0",
+  "description": "Read network device configuration blobs from NA/Cramer database",
+  "type": "module",
+  "openclaw": {
+    "extensions": [
+      "./index.js"
+    ]
+  }
+}

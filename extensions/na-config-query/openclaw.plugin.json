@@ -1,0 +1,17 @@
+{
+  "id": "na-config-query",
+  "name": "NA Config Query",
+  "description": "Read network device configuration blobs from NA/Cramer database using slice & fold strategy",
+  "enabledByDefault": true,
+  "contracts": {
+    "tools": ["read_device_config"]
+  },
+  "toolMetadata": {
+    "read_device_config": {}
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}
