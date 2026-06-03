@@ -1,11 +1,14 @@
 import { execFile } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { Type } from "typebox";
 
 const execFileAsync = promisify(execFile);
 
-// Python script path
-const SCRIPT = "/Users/liyang/CodeBuddy/20260509225947/iceberg-deploy/query_iceberg.py";
+// Python script path — relative to this extension directory
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SCRIPT = path.resolve(__dirname, "../scripts/query_iceberg.py");
 
 // ─── 当前运行上下文（由 OpenClaw runtime 注入） ───
 // 可通过环境变量或全局状态获取

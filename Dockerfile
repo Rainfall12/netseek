@@ -171,8 +171,12 @@ RUN --mount=type=cache,id=openclaw-bookworm-apt-cache,target=/var/cache/apt,shar
     --mount=type=cache,id=openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      ca-certificates curl git hostname lsof openssl procps python3 tini && \
+      ca-certificates curl git hostname lsof openssl procps python3 python3-pip tini && \
     update-ca-certificates
+
+# Install Python dependencies for iceberg-query extension
+RUN --mount=type=cache,id=openclaw-pip-cache,target=/root/.cache/pip,sharing=locked \
+    pip3 install --break-system-packages pyiceberg[pyarrow,s3fs]>=0.8.0 boto3>=1.34.0
 
 RUN chown node:node /app
 

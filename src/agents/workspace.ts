@@ -101,30 +101,39 @@ function stripFrontMatter(content: string): string {
   return trimmed;
 }
 
-async function loadTemplate(name: string): Promise<string> {
-  const cached = workspaceTemplateCache.get(name);
+async function loadTemplate(name: string, variant?: string): Promise<string> {
+  const cacheKey = variant ? `${variant}/${name}` : name;
+  const cached = workspaceTemplateCache.get(cacheKey);
   if (cached) {
     return cached;
   }
 
   const pending = (async () => {
     const templateDir = await resolveWorkspaceTemplateDir();
-    const templatePath = path.join(templateDir, name);
-    try {
-      const content = await fs.readFile(templatePath, "utf-8");
-      return stripFrontMatter(content);
-    } catch {
-      throw new Error(
-        `Missing workspace template: ${name} (${templatePath}). Ensure docs/reference/templates are packaged.`,
-      );
+    // Try variant-specific template first, then fall back to default
+    const candidates = variant
+      ? [path.join(templateDir, variant, name), path.join(templateDir, name)]
+      : [path.join(templateDir, name)];
+
+    for (const templatePath of candidates) {
+      try {
+        const content = await fs.readFile(templatePath, "utf-8");
+        return stripFrontMatter(content);
+      } catch {
+        // Continue to next candidate
+        continue;
+      }
     }
+    throw new Error(
+      `Missing workspace template: ${name} (${candidates.join(" or ")}). Ensure docs/reference/templates are packaged.`,
+    );
   })();
 
-  workspaceTemplateCache.set(name, pending);
+  workspaceTemplateCache.set(cacheKey, pending);
   try {
     return await pending;
   } catch (error) {
-    workspaceTemplateCache.delete(name);
+    workspaceTemplateCache.delete(cacheKey);
     throw error;
   }
 }
@@ -473,6 +482,12 @@ export async function ensureAgentWorkspace(params?: {
    * Required workspace setup such as AGENTS.md and TOOLS.md still runs.
    */
   skipOptionalBootstrapFiles?: string[];
+  /**
+   * Template subdirectory name under docs/reference/templates/ to use.
+   * When set, tries <variant>/<name> first, falls back to default <name>.
+   * Example: "rca" loads templates/rca/SOUL.md before templates/SOUL.md.
+   */
+  templateVariant?: string;
 }): Promise<{
   dir: string;
   agentsPath?: string;
@@ -519,12 +534,13 @@ export async function ensureAgentWorkspace(params?: {
     return existing.every((v) => !v) && !hasCanonicalRootMemory;
   })();
 
-  const agentsTemplate = await loadTemplate(DEFAULT_AGENTS_FILENAME);
-  const soulTemplate = await loadTemplate(DEFAULT_SOUL_FILENAME);
-  const toolsTemplate = await loadTemplate(DEFAULT_TOOLS_FILENAME);
-  const identityTemplate = await loadTemplate(DEFAULT_IDENTITY_FILENAME);
-  const userTemplate = await loadTemplate(DEFAULT_USER_FILENAME);
-  const heartbeatTemplate = await loadTemplate(DEFAULT_HEARTBEAT_FILENAME);
+  const variant = params?.templateVariant;
+  const agentsTemplate = await loadTemplate(DEFAULT_AGENTS_FILENAME, variant);
+  const soulTemplate = await loadTemplate(DEFAULT_SOUL_FILENAME, variant);
+  const toolsTemplate = await loadTemplate(DEFAULT_TOOLS_FILENAME, variant);
+  const identityTemplate = await loadTemplate(DEFAULT_IDENTITY_FILENAME, variant);
+  const userTemplate = await loadTemplate(DEFAULT_USER_FILENAME, variant);
+  const heartbeatTemplate = await loadTemplate(DEFAULT_HEARTBEAT_FILENAME, variant);
   const skipOptionalBootstrapFiles = new Set(params?.skipOptionalBootstrapFiles ?? []);
   const shouldWriteBootstrapFile = (fileName: string): boolean =>
     !OPTIONAL_BOOTSTRAP_FILENAMES.has(fileName) || !skipOptionalBootstrapFiles.has(fileName);
@@ -586,7 +602,7 @@ export async function ensureAgentWorkspace(params?: {
     ) {
       markState({ setupCompletedAt: nowIso() });
     } else {
-      const bootstrapTemplate = await loadTemplate(DEFAULT_BOOTSTRAP_FILENAME);
+      const bootstrapTemplate = await loadTemplate(DEFAULT_BOOTSTRAP_FILENAME, variant);
       const wroteBootstrap = await writeFileIfMissing(bootstrapPath, bootstrapTemplate);
       if (!wroteBootstrap) {
         bootstrapExists = await pathExists(bootstrapPath);
